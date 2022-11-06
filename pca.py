@@ -2,12 +2,11 @@ import numpy as np
 import pandas as pd
 
 # input data size = (2,224)
-
 class myPCA:
-    def __init__(self, data, n_PC, type='similar'):
+    def __init__(self, data, n_PC, type_s='similar'):
         self.data = data
         self.n_PC = n_PC
-        self.type = type
+        self.type = type_s
 
     def zero_mean(self):
         data = self.data.T
@@ -26,14 +25,14 @@ class myPCA:
     def get_matrix(self):
         zero_mean_data = self.zero_mean()
 
-        cov_matrix = np.cov(zero_mean_data.T[0],zero_mean_data.T[1])
+        cov_matrix = np.cov(zero_mean_data.T)
 
 
         if self.type == 'homo':
             return cov_matrix
 
         elif self.type == 'heter':
-            cor_matrix = np.corrcoef(zero_mean_data.T[0],zero_mean_data.T[1])
+            cor_matrix = np.corrcoef(zero_mean_data.T)
             return cor_matrix
 
         else:
@@ -57,12 +56,12 @@ class myPCA:
         eigen_value, _ = self.get_eigenfactors()
         ratio = np.sum(eigen_value[:self.n_PC])/np.sum(eigen_value)
         print('eigenvalues refer to {}'.format(eigen_value))
-        print('your select {} principle component(PC) represent {}% variance.'.format(self.n_PC, np.round(ratio, 5)*100))
+        print('your selected {} principle component(PC) represent {}% variance.'.format(self.n_PC, np.round(ratio, 5)*100))
 
     def get_PC_loading(self):
         _, eigen_vector = self.get_eigenfactors()
 
-        return eigen_vector
+        return eigen_vector[:self.n_PC]
 
     def get_PC(self):
         zero_meam_data = self.zero_mean()
@@ -77,7 +76,7 @@ x=np.array([2.5,0.5,2.2,1.9,3.1,2.3,2,1,1.5,1.1])
 y=np.array([2.4,0.7,2.9,2.2,3,2.7,1.6,1.1,1.6,0.9])
 data=np.array([[x[i],y[i]] for i in range(len(x))])
 
-pca = myPCA(data, 1, 'homo')
+pca = myPCA(data, 1, 'heter')
 pca.get_variance_ratio()
 PC = pca.get_PC()
 print(PC)
